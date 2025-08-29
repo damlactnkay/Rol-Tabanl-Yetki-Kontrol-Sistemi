@@ -1,0 +1,165 @@
+﻿@model dynamic
+
+<style>
+    /* Bu CSS yalnızca urun-form-page sınıfına sahip konteyner içindeki elemanları etkiler */
+    .urun-form-page .btn {
+        font-size: 15px;
+        padding: 8px 18px;
+        border-radius: 6px;
+        border: 1px solid #1C3A57;
+        background-color: #2C4A70;
+        color: #FFFFFF;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+        .urun-form-page .btn:hover {
+            background-color: #1C3A57;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .urun-form-page .btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(28,58,87,0.3);
+        }
+
+    .urun-form-page select.form-select {
+        padding: 7px 12px;
+        border-radius: 6px;
+        border: 1px solid #1C3A57;
+        background-color: #FFFFFF;
+        color: #2C4A70;
+        font-weight: 400;
+        transition: all 0.25s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+        .urun-form-page select.form-select:focus {
+            outline: none;
+            border-color: #2C4A70;
+            box-shadow: 0 0 5px rgba(44,74,112,0.2);
+        }
+</style>
+
+<div class="dropdown-container urun-form-page">
+
+    <div class="mb-3">
+        <button id="searchProductBtn" class="btn btn-secondary">Ürün Ara</button>
+    </div>
+
+    <div class="mb-3">
+        <label>Bölüm</label>
+        <select id="bolumDropdown" class="form-select dropdown-right">
+            <option value="">Bölüm Seçin</option>
+            @foreach (var bolum in ViewBag.Bolumler)
+            {
+                <option value="@bolum.Value">@bolum.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Makine</label>
+        <select id="makineDropdown" class="form-select dropdown-right">
+            <option value="">Makine Seçin</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Vardiya</label>
+        <select id="vardiyaDropdown" class="form-select dropdown-right">
+            <option value="">Vardiya Seçin</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <button id="listeleBtn" class="btn btn-primary">Listele</button>
+    </div>
+
+    <div class="mt-4">
+        <button id="listAllProductsBtn" class="btn btn-info">Tüm Ürünleri Listele</button>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+
+        // Bölüm değişince makine yükle
+        $("#bolumDropdown").on("change", function() {
+            var bolumId = $(this).val();
+            var makineDropdown = $("#makineDropdown");
+            var vardiyaDropdown = $("#vardiyaDropdown");
+
+            vardiyaDropdown.html('<option value="">Önce makine seçiniz</option>');
+
+            if (!bolumId) {
+                makineDropdown.html('<option value="">Önce bölüm seçiniz</option>');
+                return;
+            }
+
+            makineDropdown.html('<option value="">Seçiniz</option>');
+
+            $.getJSON('@Url.Action("GetMakinelerByBolum", "Admin")', { bolumId: bolumId }, function(data) {
+                $.each(data, function(i, makine) {
+                    makineDropdown.append('<option value="' + makine.id + '">' + makine.ad + '</option>');
+                });
+            });
+        });
+
+        // Makine değişince vardiya yükle
+        $("#makineDropdown").on("change", function() {
+            var makineId = $(this).val();
+            var vardiyaDropdown = $("#vardiyaDropdown");
+
+            if (!makineId) {
+                vardiyaDropdown.html('<option value="">Önce makine seçiniz</option>');
+                return;
+            }
+
+            vardiyaDropdown.html('<option value="">Seçiniz</option>');
+
+            $.getJSON('@Url.Action("GetVardiyalarByMakine", "Admin")', { makineId: makineId }, function(data) {
+                $.each(data, function(i, vardiya) {
+                    vardiyaDropdown.append('<option value="' + vardiya.id + '">' + vardiya.kod + '</option>');
+                });
+            });
+        });
+
+        // Ürün ara butonu
+        $("#searchProductBtn").on("click", function() {
+            var urunAdi = prompt("Aramak istediğiniz ürün adını girin:");
+            if (!urunAdi) return;
+
+            $.get('@Url.Action("SearchProducts", "Admin")', { urunAdi: urunAdi }, function(partialView) {
+                $("#urunTablosu").html(partialView);
+            });
+        });
+
+        // Vardiyaya göre listele
+        $("#listeleBtn").on("click", function() {
+            var vardiyaId = $("#vardiyaDropdown").val();
+            if (!vardiyaId) {
+                alert("Lütfen bir vardiya seçiniz!");
+                return;
+            }
+
+            $.get('@Url.Action("VardiyayaGoreUrunler", "Admin")', { vardiyaId: vardiyaId }, function(partialView) {
+                $("#urunTablosu").html(partialView);
+            });
+        });
+
+        // Tüm ürünleri listele
+        $("#listAllProductsBtn").on("click", function() {
+            $.get('@Url.Action("GetAllProducts", "Admin")', function(partialView) {
+                $("#urunTablosu").html(partialView);
+            });
+        });
+
+    });
+</script>

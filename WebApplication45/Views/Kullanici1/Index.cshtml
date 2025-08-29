@@ -1,0 +1,183 @@
+﻿@model List<Entity.Class.Uruns>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>Kullanıcı Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fdf6f0;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #8b0000;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 15px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+            .sidebar.collapsed {
+                width: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+
+        #menuToggle {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1100;
+            background-color: #9b0000;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        header {
+            background-color: #8b0000;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            transition: margin-left 0.3s ease;
+        }
+
+        #adminTitle {
+            flex: 1;
+            text-align: center;
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        body.sidebar-collapsed .content {
+            margin-left: 0;
+        }
+
+        .table-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+
+        thead {
+            background-color: #2C3E50;
+            color: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #34495E;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #c0392b;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #e74c3c;
+            }
+    </style>
+</head>
+<body>
+    <button id="menuToggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <hr style="border-color: rgba(255,255,255,0.3);" />
+        @await Component.InvokeAsync("CascadingDropdown")
+    </nav>
+
+    <header>
+        <h1 id="adminTitle">Kullanıcı Panel</h1>
+        <div class="header-right">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a href="/Account/LogoutConfirm" class="btn btn-danger">Çıkış</a>
+            }
+        </div>
+    </header>
+
+    <!-- İçerik -->
+    <div class="content">
+        <div class="table-container" id="urunTablosu">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ürün Kodu</th>
+                        <th>Ürün Adı</th>
+                        <th>Ürün Fiyatı</th>
+                        <th>Ürün Stoğu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var urun in Model)
+                    {
+                        <tr>
+                            <td>@urun.Id</td>
+                            <td>@urun.UrunKodu</td>
+                            <td>@urun.UrunAdi</td>
+                            <td>@urun.UrunFiyat</td>
+                            <td>@urun.UrunAdedi</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const body = document.body;
+        const sidebar = document.getElementById('sidebar');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+            body.classList.toggle('sidebar-collapsed');
+        }
+    </script>
+</body>
+</html>
+

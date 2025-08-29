@@ -1,0 +1,87 @@
+﻿@model List<Entity.Class.Uruns>
+@{
+    bool isAdmin = ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin;
+}
+
+<div class="table-container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ürün Kodu</th>
+                <th>Ürün Adı</th>
+                <th>Ürün Stoğu</th>
+                <th>Ürün Fiyatı</th>
+             @if(isAdmin)
+             {
+                 <th>İşlemler</th>
+             }
+              
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var urun in Model)
+            {
+                <tr>
+                    <td>@urun.Id</td>
+                  
+                    <td>@urun.UrunKodu</td>
+                    <td>@urun.UrunAdi</td>
+                    <td>@urun.UrunAdedi</td>
+                    <td>@urun.UrunFiyat</td>
+                    @if (isAdmin)
+                    {
+                        <td>
+                            <a href="@Url.Action("EditProduct", "Admin", new { id = urun.Id })" class="btn btn-sm btn-primary">Düzenle</a>
+                            <a asp-action="DeleteProduct" asp-controller="Admin" asp-route-id="@urun.Id" class="btn btn-sm btn-danger">Sil</a>
+
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .table-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+
+    thead {
+        background-color: #8B0000;
+        color: white;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+        background-color: #fbe9e7;
+    }
+
+    .btn-warning {
+        background-color: #8B0000;
+        color: white;
+    }
+
+        .btn-warning:hover {
+            background-color: #a8323e;
+        }
+
+    .btn-danger {
+        background-color: #8B0000;
+        color: white;
+    }
+
+        .btn-danger:hover {
+            background-color: #a8323e;
+        }
+</style>

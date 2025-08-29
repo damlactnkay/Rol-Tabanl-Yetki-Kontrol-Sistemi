@@ -1,0 +1,65 @@
+﻿@model Entity.Class.Uruns
+
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 30px auto;
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        padding: 30px 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .form-group {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .btn {
+        min-width: 120px;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 10px 0;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+
+    .btn-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+
+    h4 {
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        color: #444;
+    }
+</style>
+
+<h2 class="text-center text-danger mb-3">Ürün Sil</h2>
+
+<div class="form-container">
+    <h4>@Model.UrunAdi</h4>
+    <p>Bu ürünü silmek istediğinize emin misiniz?</p>
+
+    <form asp-action="DeleteProduct" asp-controller="Admin" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Evet</button>
+        <a asp-action="Index" asp-controller="Admin" class="btn btn-secondary">İptal</a>
+    </form>
+</div>

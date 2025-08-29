@@ -1,0 +1,122 @@
+﻿@model Entity.Class.UrunEkle
+
+<!-- Modal -->
+<div class="modal fade" id="urunEkleModal" tabindex="-1" aria-labelledby="urunEkleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded-3">
+
+            <!-- Modal Header -->
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="urunEkleLabel">Yeni Ürün Ekle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form asp-action="Create" method="post" id="urunEkleForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Bölüm</label>
+                        <select id="BolumId" name="BolumId" class="form-select">
+                            <option value="">Seçiniz</option>
+                            @if (ViewBag.Bolumler != null)
+                            {
+                                foreach (var b in (List<SelectListItem>)ViewBag.Bolumler)
+                                {
+                                    <option value="@b.Value">@b.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Makine</label>
+                        <select id="MakineId" name="MakineId" class="form-select">
+                            <option value="">Önce bölüm seçiniz</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Vardiya</label>
+                        <select id="VardiyaId" name="VardiyaId" class="form-select">
+                            <option value="">Önce makine seçiniz</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ürün Adı</label>
+                        <input asp-for="UrunAdi" class="form-control" placeholder="Ürün adını giriniz" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ürün Fiyat</label>
+                        <input asp-for="UrunFiyat" class="form-control" placeholder="₺ Fiyat giriniz" />
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button type="submit" form="urunEkleForm" class="btn btn-primary">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+             var urunModal = new bootstrap.Modal(document.getElementById('urunEkleModal'));
+            urunModal.show();
+            // Bölüm değiştiğinde
+            $("#BolumId").change(function () {
+                var bolumId = $(this).val();
+                var makineDropdown = $("#MakineId");
+                var vardiyaDropdown = $("#VardiyaId");
+
+                vardiyaDropdown.empty().append('<option value="">Önce makine seçiniz</option>');
+
+                if (!bolumId) {
+                    makineDropdown.empty().append('<option value="">Önce bölüm seçiniz</option>');
+                    return;
+                }
+
+                makineDropdown.empty().append('<option value="">Seçiniz</option>');
+
+                $.getJSON('@Url.Action("GetMakinelerByBolum", "Admin")?bolumId=' + bolumId, function (data) {
+                    if (!data || data.length === 0) {
+                        makineDropdown.empty().append('<option value="">Makine bulunamadı</option>');
+                    } else {
+                        $.each(data, function (i, makine) {
+                            makineDropdown.append('<option value="' + makine.id + '">' + makine.ad + '</option>');
+                        });
+                    }
+                });
+            });
+
+            // Makine değiştiğinde
+            $("#MakineId").change(function () {
+                var makineId = $(this).val();
+                var vardiyaDropdown = $("#VardiyaId");
+
+                if (!makineId) {
+                    vardiyaDropdown.empty().append('<option value="">Önce makine seçiniz</option>');
+                    return;
+                }
+
+                vardiyaDropdown.empty().append('<option value="">Seçiniz</option>');
+
+                $.getJSON('@Url.Action("GetVardiyalarByMakine", "Admin")?makineId=' + makineId, function (data) {
+                    if (!data || data.length === 0) {
+                        vardiyaDropdown.empty().append('<option value="">Vardiya bulunamadı</option>');
+                    } else {
+                        $.each(data, function (i, vardiya) {
+                            vardiyaDropdown.append('<option value="' + vardiya.id + '">' + vardiya.ad + '</option>');
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

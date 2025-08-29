@@ -1,0 +1,124 @@
+﻿@model Entity.Class.Uruns
+
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 20px auto;
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .col-label {
+        width: 200px;
+        font-weight: bold;
+    }
+
+    .btn {
+        min-width: 120px;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 10px 0;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background-color: #8B0000;
+        border-color: #8B0000;
+    }
+
+    .btn-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+
+    .h2 {
+        color: #8B0000;
+    }
+
+    /* Alert stilini ekleyelim */
+    .alert {
+        padding: 15px 25px;
+        border-radius: 8px;
+        color: white;
+        background-color: #28a745;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .geri-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+</style>
+
+<h2>Ürünü Düzenle</h2>
+
+<!-- Başarılı mesaj -->
+@if (TempData["BasariliMesaj"] != null)
+{
+    <div id="basariliAlert" class="alert">
+        @TempData["BasariliMesaj"]
+    </div>
+
+    <script>
+        setTimeout(function() {
+            var alertDiv = document.getElementById('basariliAlert');
+            if(alertDiv) {
+                alertDiv.style.display = 'none';
+            }
+        }, 3000);
+    </script>
+}
+    <!-- Sağ üstteki geri butonu -->
+    <button type="button" class="btn btn-secondary geri-btn" onclick="history.back()">Geri</button>
+<!-- Form -->
+<div class="form-container">
+<form asp-action="EditProduct" asp-controller="Admin" method="post" style="margin-top: 40px;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="VardiyaId" />
+
+    <div class="form-group mb-3">
+        <label asp-for="UrunAdi" class="form-label fw-semibold">Ürün Adı:</label>
+        <input asp-for="UrunAdi" class="form-control" placeholder="Ürün adını giriniz..." required />
+        <span asp-validation-for="UrunAdi" class="text-danger small"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="UrunKodu" class="form-label fw-semibold">Ürün Kodu:</label>
+        <input asp-for="UrunKodu" class="form-control" placeholder="Ürün kodunu giriniz..." required />
+        <span asp-validation-for="UrunKodu" class="text-danger small"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="UrunAdedi" class="form-label fw-semibold">Ürün Stoğu:</label>
+        <input asp-for="UrunAdedi" class="form-control" type="number" min="0" value="@Model.UrunAdedi" required />
+        <span asp-validation-for="UrunAdedi" class="text-danger small"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="UrunFiyat" class="form-label fw-semibold">Ürün Fiyatı:</label>
+        <input asp-for="UrunFiyat" class="form-control" type="number" step="0.01" min="0" value="@Model.UrunFiyat" required />
+        <span asp-validation-for="UrunFiyat" class="text-danger small"></span>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-success px-4">Kaydet</button>
+        <a asp-action="Index" asp-controller="Admin" class="btn btn-secondary px-4">İptal</a>
+    </div>
+</form>
+</div>
